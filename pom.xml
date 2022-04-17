@@ -6,7 +6,13 @@
 
     <groupId>tech.xigam</groupId>
     <artifactId>Express.Java</artifactId>
-    <version>1.0.0</version>
+    <version>1.1.0</version>
+    
+    <!-- 
+    Changelog:
+    1.0.0 - Initial release.
+    1.1.0 - Add support for other HTTP servers & support SSL by default.
+    -->
 
     <name>Express.Java</name>
     <description>My **basic** recreation of Express.JS in Java.</description>

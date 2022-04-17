@@ -1,7 +1,10 @@
 package tech.xigam.express;
 
 import com.sun.net.httpserver.HttpServer;
+import com.sun.net.httpserver.HttpsConfigurator;
+import com.sun.net.httpserver.HttpsServer;
 
+import javax.net.ssl.SSLContext;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.function.Consumer;
@@ -48,6 +51,29 @@ public final class Express {
         // Create server.
         HttpServer httpServer = HttpServer.create(address, 0);
 
+        // Hook into the server.
+        this.hook(httpServer);
+        // Start the server.
+        httpServer.start();
+    }
+    
+    public void listenSecure(SSLContext sslContext) throws IOException {
+        // Create server.
+        HttpsServer httpsServer = HttpsServer.create(address, 0);
+        // Configure SSL encryption.
+        httpsServer.setHttpsConfigurator(new HttpsConfigurator(sslContext));
+        
+        // Hook into the server.
+        this.hook(httpsServer);
+        // Start the server.
+        httpsServer.start();
+    }
+
+    /**
+     * Hooks into an existing HTTP server.
+     * This should be the final method called.
+     */
+    public void hook(HttpServer httpServer) {
         // Add routes.
         for (var routes : this.router.get.entrySet())
             httpServer.createContext(routes.getKey(), new Route(Route.RouteType.GET, routes.getValue(), this));
@@ -59,8 +85,5 @@ public final class Express {
             httpServer.createContext(routes.getKey(), new Route(Route.RouteType.DELETE, routes.getValue(), this));
         for (var routes : this.router.patch.entrySet())
             httpServer.createContext(routes.getKey(), new Route(Route.RouteType.PATCH, routes.getValue(), this));
-
-        // Start the server.
-        httpServer.start();
     }
 }
