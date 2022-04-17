@@ -6,12 +6,13 @@
 
     <groupId>tech.xigam</groupId>
     <artifactId>Express.Java</artifactId>
-    <version>1.1.0</version>
+    <version>1.2.0</version>
     
     <!-- 
     Changelog:
     1.0.0 - Initial release.
     1.1.0 - Add support for other HTTP servers & support SSL by default.
+    1.2.0 - Add support for more response functionality.
     -->
 
     <name>Express.Java</name>

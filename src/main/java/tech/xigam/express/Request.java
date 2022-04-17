@@ -5,6 +5,7 @@ import com.sun.net.httpserver.HttpExchange;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -15,21 +16,35 @@ public final class Request {
     public final HttpExchange httpExchange;
     public final String requestType;
     public final String requestUrl;
+    public final String requestBody;
     public final Map<String, String> requestArguments;
+    
     private int responseCode = 200;
+    private Map<String, String[]> responseHeaders = new HashMap<>();
 
     public Request(
             HttpExchange httpExchange, String requestType, String requestUrl,
-            Map<String, String> requestArguments
+            String requestBody, Map<String, String> requestArguments
     ) {
         this.httpExchange = httpExchange;
         this.requestType = requestType;
         this.requestUrl = requestUrl;
+        this.requestBody = requestBody;
         this.requestArguments = requestArguments;
+        
+        // Close request body.
+        try {
+            httpExchange.getRequestBody().close();
+        } catch (Exception ignored) { }
     }
 
     public Request code(int statusCode) {
         this.responseCode = statusCode;
+        return this;
+    }
+    
+    public Request addHeader(String name, String... value) {
+        this.responseHeaders.put(name, value);
         return this;
     }
 
@@ -59,5 +74,22 @@ public final class Request {
         initial.remove(0);
         initial.remove(1);
         return initial;
+    }
+
+    /**
+     * Returns the request argument with the given name.
+     * @param key The name of the argument.
+     * @return The value of the argument.
+     */
+    public String getArgument(String key) {
+        return this.requestArguments.get(key);
+    }
+
+    /**
+     * Returns the request's body data.
+     * @return The request body as a string.
+     */
+    public String getRequestBody() {
+        return this.requestBody;
     }
 }

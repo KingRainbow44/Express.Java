@@ -3,6 +3,9 @@ package tech.xigam.express;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
+import java.io.BufferedInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
@@ -24,10 +27,11 @@ public final class Route implements HttpHandler {
     public void handle(HttpExchange exchange) {
         var requestMethod = exchange.getRequestMethod();
         var requestUrl = exchange.getRequestURI().toString();
+        var requestBody = this.readBody(exchange.getRequestBody());
         var requestArguments = this.parseArguments(requestUrl);
         Request request = new Request(
                 exchange, requestMethod, requestUrl,
-                requestArguments
+                requestBody, requestArguments
         );
 
         if (!requestMethod.matches(this.routeType.name())) {
@@ -57,6 +61,18 @@ public final class Route implements HttpHandler {
         }
 
         return arguments;
+    }
+    
+    private String readBody(InputStream inputStream) {
+        try {
+            BufferedInputStream bis = new BufferedInputStream(inputStream);
+            ByteArrayOutputStream buf = new ByteArrayOutputStream();
+            for (int result = bis.read(); result != -1; result = bis.read()) {
+                buf.write((byte) result);
+            } return buf.toString();
+        } catch (Exception ignored) {
+            return inputStream.toString();
+        }
     }
 
     public enum RouteType {
