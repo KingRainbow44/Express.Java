@@ -50,12 +50,14 @@ public final class Request {
 
     public void respond(String response) {
         try {
+            byte[] responseBytes = response.getBytes();
             OutputStream output = this.httpExchange.getResponseBody();
-            this.httpExchange.sendResponseHeaders(this.responseCode, response.length());
-            output.write(response.getBytes());
+            this.httpExchange.sendResponseHeaders(this.responseCode, responseBytes.length);
+            output.write(responseBytes);
             output.flush();
             output.close();
-        } catch (IOException ignored) {
+        } catch (IOException exception) {
+            exception.printStackTrace();
         }
     }
 
