@@ -37,4 +37,13 @@ public final class Router {
         this.patch.put(path, handler);
         return this;
     }
+    
+    public Router all(String path, Consumer<Request> handler) {
+        this.get.put(path, handler);
+        this.post.put(path, handler);
+        this.put.put(path, handler);
+        this.delete.put(path, handler);
+        this.patch.put(path, handler);
+        return this;
+    }
 }
